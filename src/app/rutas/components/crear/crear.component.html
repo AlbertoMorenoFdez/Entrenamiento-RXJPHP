@@ -1,18 +1,22 @@
 <h4>Introducir datos de la ruta</h4>
-<form class="row"
-(ngSubmit)="emitirRuta()">
-<label>Nombre de la ruta</label>
-<input type="text" class="form-control mb-2" [(ngModel)]="ruta.nombre" name="nombre">
-<label>Fecha</label>
-<input type="date" class="form-control mb-2" [(ngModel)]="ruta.fecha" name="fecha">
-<label>Distancia (km)</label>
-<input type="number" class="form-control mb-2" placeholder="Distancia" [(ngModel)]="ruta.distancia" name="distancia">
-<label>Duración</label>
-<div class="form-inline">
-  <input type="number" class="form-control mb-2 mr-2" placeholder="Horas" [(ngModel)]="ruta.horas" name="horas">
-  <span>:</span>
-  <input type="number" class="form-control mb-2 ml-2" placeholder="Minutos" [(ngModel)]="ruta.minutos" name="minutos">
-</div>
-<input type="submit" class="btn btn-primary mb-2" value="Guardar">
-</form>
 
+<form class="row" #rutaForm="ngForm" (ngSubmit)="rutaForm.valid && emitirRuta()">
+  <label>Nombre de la ruta</label>
+  <input type="text" class="form-control mb-2" [(ngModel)]="ruta.nombre" name="nombre" required>
+
+  <label>Fecha</label>
+  <input type="date" class="form-control mb-2" [(ngModel)]="ruta.fecha" name="fecha" required>
+
+  <label>Distancia (km)</label>
+  <input type="number" class="form-control mb-2" placeholder="Distancia" [(ngModel)]="ruta.distancia" name="distancia" required>
+
+  <label>Duración</label>
+  <div class="form-inline">
+    <input type="number" class="form-control mb-2 mr-2" placeholder="Horas" [(ngModel)]="ruta.horas" name="horas" required>
+    <span>:</span>
+    <input type="number" class="form-control mb-2 ml-2" placeholder="Minutos (00-59)" [(ngModel)]="ruta.minutos" name="minutos" min="0" max="59" required>
+  </div>
+
+  <input type="submit" class="btn btn-primary mb-2" value="Guardar" [disabled]="!rutaForm.valid">
+
+</form>

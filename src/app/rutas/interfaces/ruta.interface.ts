@@ -1,8 +1,8 @@
 export interface Ruta {
+  id?: number;
   nombre: string;
   fecha: string;
-  distancia: number;
-  duracion: number;
+  distancia: number;  
   horas: number;
   minutos: number;
 }

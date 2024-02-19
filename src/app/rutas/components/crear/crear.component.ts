@@ -1,52 +1,47 @@
-import { Component, EventEmitter, Output, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, SimpleChanges, OnChanges, OnInit, OnDestroy } from '@angular/core';
 import { Ruta } from '../../interfaces/ruta.interface';
+import { RutasService } from '../../service/rutas-service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'rutas-crear',
   templateUrl: './crear.component.html',
   styleUrls: ['./crear.component.css']
 })
-export class CrearRutaComponent {
-  @Output()
-  public onNewRuta: EventEmitter<Ruta> = new EventEmitter();
+export class CrearRutaComponent implements OnChanges, OnInit, OnDestroy {
 
-  public ruta: Ruta = {
-    nombre: '',
-    fecha: '',
-    distancia: 0,
-    duracion: 0,
-    horas: 0,
-    minutos: 0
+public ruta: Ruta = {nombre : '', fecha: '', distancia: 0, horas: 0, minutos: 0};
+private suscripcion: Subscription | null = null;
+  
+  constructor(private rutasService: RutasService) { }
+
+  // Al iniciar el componente, me suscribo al observable del servicio
+  ngOnInit(){
+    this.suscripcion = this.rutasService.ruta$.subscribe(ruta => {
+      this.ruta = ruta;
+    });
   }
 
-  @Input()
-  public oldRuta: Ruta = {
-    nombre: '',
-    fecha: new Date().toISOString().split('T')[0],
-    distancia: 0,
-    duracion: 0,
-    horas: 0,
-    minutos: 0
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['oldRuta'] && changes['oldRuta'].currentValue) {
-      this.ruta = { ...changes['oldRuta'].currentValue };
+  // Al destruir el componente, me desuscribo del observable del servicio
+  ngOnDestroy(): void {
+    if(this.suscripcion!==null){
+      this.suscripcion.unsubscribe();
     }
   }
 
+  // Al emitir la ruta, la envio al servicio
   emitirRuta(): void {
-    this.onNewRuta.emit({ ...this.ruta });
-    this.ruta.nombre = '';
-    this.ruta.fecha = new Date().toISOString().split('T')[0]; // Fecha actual
-    this.ruta.distancia = 0;
-    this.ruta.duracion = this.ruta.horas * 60 + this.ruta.minutos;
+    console.log("uso el servicio emitirRuta para enviar a rutasService: ", this.ruta);
+    this.rutasService.anadirRuta(this.ruta);
+    this.ruta= {nombre : '', fecha: '', distancia: 0, horas: 0, minutos: 0};
+   
   }
 
-  actualizarRuta(): void {
-    this.ruta.nombre = '';
-    this.ruta.fecha = new Date().toISOString().split('T')[0]; // Fecha actual
-    this.ruta.distancia = 0;
-    this.ruta.duracion = this.ruta.horas * 60 + this.ruta.minutos;
+  // Al detectar cambios en el componente, actualizo la ruta
+  ngOnChanges(changes: SimpleChanges) {
+    console.log("Detecto cambios en el componente crear");
+    if (changes['ruta'] && changes['ruta'].currentValue) {
+      this.ruta = { ...changes['ruta'].currentValue };
+    }
   }
 }

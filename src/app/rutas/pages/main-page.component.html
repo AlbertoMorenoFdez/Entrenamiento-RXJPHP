@@ -1,11 +1,10 @@
 <div class="row">
     <div class="col">
-        <rutas-crear (onNewRuta)="addRuta($event)" [oldRuta]="oldRuta"></rutas-crear>
+        <rutas-crear ></rutas-crear>
     </div>
     <div class="col">
-        <rutas-listar [rutas]="rutas" (onRemoveRuta)="onRemoveRuta($event)"
-            (onEditRuta)="onEditRuta($event)"></rutas-listar>
+        <rutas-listar ></rutas-listar>
     </div>
 
 </div>
-<app-grafico [rutas]="rutas"></app-grafico>
+<app-grafico ></app-grafico>

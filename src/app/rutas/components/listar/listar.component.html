@@ -1,32 +1,13 @@
 <h4>Listado de rutas</h4>
 <label>Ordenar por:</label>
 
-
 <table class="botones">
         <tr>
-                <td>
-                        <label>Distancia</label>
-                        <button class="btn btn-outline-primary" type="button" (click)="ordenarPorDistanciaMenor()"><i
-                                        class="fas fa-arrow-down"></i></button>
-                        <button class="btn btn-outline-primary" type="button" (click)="ordenarPorDistanciaMayor()"> <i
-                                        class="fas fa-arrow-up"></i></button>
-                </td>
-                <td style="width:10px"></td>
                 <td>
                         <label>Nombre</label>
                         <button class="btn btn-outline-primary" type="button" (click)="ordenarPorNombreMenor()"> <i
                                         class="fas fa-arrow-down"></i></button>
                         <button class="btn btn-outline-primary" type="button" (click)="ordenarPorNombreMayor()"> <i
-                                        class="fas fa-arrow-up"></i></button>
-                </td>
-        </tr>
-
-        <tr>
-                <td>
-                        <label>Duración</label>
-                        <button class="btn btn-outline-primary" type="button" (click)="ordernarPorDuracionMenor()"> <i
-                                        class="fas fa-arrow-down"></i></button>
-                        <button class="btn btn-outline-primary" type="button" (click)="ordenarPorDuracionMayor()"> <i
                                         class="fas fa-arrow-up"></i></button>
                 </td>
                 <td style="width:10px"></td>
@@ -38,19 +19,52 @@
                                         class="fas fa-arrow-up"></i></button>
                 </td>
         </tr>
-</table>
-<br>
-<ul class="list-group">
-        <li class="list-group-item" *ngFor="let ruta of rutas;
-  let i=index;">
-                <span class="text-primary">Ruta: {{i+1}}</span><br>
-                <strong>Nombre: </strong> <span>{{ruta.nombre}}</span><br>
-                <strong>Fecha: </strong> <span>{{ruta.fecha | date:'dd/MM/yyyy'}}</span><br>
-                <strong>Distancia: </strong> <span>{{ruta.distancia}} km.</span><br>
-                <strong>Duración: </strong> <span>{{ruta.horas}} horas: {{ruta.minutos}} minutos</span><br>
 
-                <input class="btn btn-danger" type="button" value="Eliminar" (click)="emitId(i)"> |
-                <input class="btn btn-warning" type="button" value="Editar" (click)="emitRuta(i,ruta)">
+        <tr>
+                <td>
+                        <label>Distancia</label>
+                        <button class="btn btn-outline-primary" type="button" (click)="ordenarPorDistanciaMenor()"><i
+                                        class="fas fa-arrow-down"></i></button>
+                        <button class="btn btn-outline-primary" type="button" (click)="ordenarPorDistanciaMayor()"> <i
+                                        class="fas fa-arrow-up"></i></button>
+                </td>
+                <td style="width:10px"></td>
+                <td>
+                        <label>Duración</label>
+                        <button class="btn btn-outline-primary" type="button" (click)="ordernarPorDuracionMenor()"> <i
+                                        class="fas fa-arrow-down"></i></button>
+                        <button class="btn btn-outline-primary" type="button" (click)="ordenarPorDuracionMayor()"> <i
+                                        class="fas fa-arrow-up"></i></button>
+                </td>
+        </tr>
+</table>
+
+<!-- 
+        PARA IMPLEMENTAR UN FILTRO POR DISTANCIA, DESCOMENTAR ESTE CÓDIGO Y EL MÉTODO setFiltro() EN EL COMPONENTE
+        <label>Filtrar por:</label>
+
+<button class="btn btn-primary" (click)="setFiltro(20)" >Menos de 20 km</button>
+<button class="btn btn-primary" (click)="setFiltro(40)">Entre 20 y 40 km</button>
+<button class="btn btn-primary" (click)="setFiltro(41)">Más de 40 km</button>
+
+<br> -->
+
+<ul class="list-group">
+        <li class="list-group-item" *ngFor="let ruta of rutas; let i=index;" 
+        
+                [ngStyle]="{'color': ruta.distancia <= 20 ? 'red' : ruta.distancia > 20 && ruta.distancia <= 40 ? 'orange' : 'green'}">
+        <div>
+                <strong>Nombre: </strong> <span>{{ruta.nombre}}</span><br>
+                <strong>Distancia: </strong> <span>{{ruta.distancia}} km.</span>
+        </div>
+
+        <div>
+                <strong>Fecha: </strong> <span>{{ruta.fecha | date:'dd/MM/yyyy'}}</span><br>
+                <strong>Duración: </strong> <span>{{ruta.horas}} h: {{ruta.minutos}} m</span>
+        </div>
+
+        <input class="btn btn-danger" type="button" value="Eliminar" (click)="emitId(ruta.id!)"> |
+        <input class="btn btn-warning" type="button" value="Editar" (click)="emitRuta(ruta.id!,ruta)">
 
         </li>
 </ul>

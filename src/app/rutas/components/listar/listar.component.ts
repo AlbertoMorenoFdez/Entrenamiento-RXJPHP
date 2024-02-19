@@ -1,63 +1,54 @@
 import { CommonModule } from '@angular/common';
-import { Input, OnChanges, OnInit } from '@angular/core';
-import { ChangeDetectionStrategy, EventEmitter, Output, Component } from '@angular/core';
+import { Input, Component, OnChanges, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, EventEmitter, Output } from '@angular/core';
 import { Ruta } from '../../interfaces/ruta.interface';
 import { Chart } from 'chart.js';
 import { SimpleChanges } from '@angular/core';
+import { RutasService } from '../../service/rutas-service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'rutas-listar',
   templateUrl: './listar.component.html',
   styleUrls: ['./listar.component.css']
 })
-export class ListarRutasComponent implements OnInit, OnChanges {
-  @Output()
-  public onRemoveRuta: EventEmitter<number> = new EventEmitter();
-  @Output()
-  public onEditRuta: EventEmitter<Ruta> = new EventEmitter();
-
-  private _rutas!: Ruta[];
+export class ListarRutasComponent implements OnInit, OnDestroy {
 
   @Input()
-  public get rutas(): Ruta[] {
-    return this._rutas;
-  }
+  public rutas: Ruta[] = [];
+  private suscripcion: Subscription | null = null;
 
-  public set rutas(value: Ruta[]) {
-    if (value !== null && value !== undefined) {
-      this._rutas = value;
-      // this.storeRutasInLocalStorage();
-    }
-  }
+  constructor(private rutasService: RutasService) { }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['rutas'] && !changes['rutas'].firstChange) {
-      this.storeRutasInLocalStorage();
-    }
-  }
-
-  emitId(id: number): void {
-    this.onRemoveRuta.emit(id);
-  }
-
-  emitRuta(id: number, ruta: Ruta): void {
-    this.onRemoveRuta.emit(id);
-    this.onEditRuta.emit(ruta);
-  }
-
+  // Al iniciar el componente, me suscribo al observable del servicio
   ngOnInit(): void {
-    const storedRutas = localStorage.getItem('rutas');
-    if (storedRutas) {
-      this.rutas = JSON.parse(storedRutas);
-    } else {
-      this.rutas = [];
-    }
+    this.suscripcion = this.rutasService.rutas$.subscribe((rutasActualizadas) => {
+      this.rutas = rutasActualizadas;
+    });
   }
 
-  storeRutasInLocalStorage(): void {
-    localStorage.setItem('rutas', JSON.stringify(this.rutas));
+  // Al destruir el componente, me desuscribo del observable del servicio
+  ngOnDestroy(): void {
+      if(this.suscripcion!==null){
+        this.suscripcion.unsubscribe();
+      }
   }
 
+  // Al emitir la ruta, la envio al servicio para borrar
+  emitId(id: number): void {
+    console.log("uso el servicio emitId para enviar: ", id);
+    this.rutasService.borrarRuta(id);
+
+  }
+
+  // Al emitir la ruta, la envio al servicio, la borro y actualizo
+  emitRuta(id: number, ruta: Ruta): void {
+    console.log("Desde 'listado' envio: ", id, ruta)
+    this.rutasService.borrarRuta(id);
+    this.rutasService.actualizarRuta(ruta);
+  }
+
+  // Funciones ara ordenar las rutas
   ordenarPorDistanciaMenor(): void {
     this.rutas = [...this.rutas].sort((a, b) => a.distancia - b.distancia);
   }
@@ -88,6 +79,7 @@ export class ListarRutasComponent implements OnInit, OnChanges {
 
   ordenarPorNombreMayor(): void {
     this.rutas = [...this.rutas].sort((a, b) => b.nombre.localeCompare(a.nombre));
-  }
+  }  
 
 }
+
